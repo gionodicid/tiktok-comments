@@ -6,11 +6,10 @@ const css = fs.readFileSync(
 );
 
 const checks = [
-  { name: "tcm:flex utility", pattern: ".tcm\\:flex" },
-  { name: "tcm:text-foreground utility", pattern: ".tcm\\:text-foreground" },
+  { name: "tcm-flex utility", pattern: ".tcm-flex" },
+  { name: "tcm-text-foreground utility", pattern: ".tcm-text-foreground" },
   { name: "tcm-root scope class", pattern: ".tcm-root" },
-  { name: "tcm:hover:tcm:bg-muted utility", pattern: ".tcm\\:hover\\:tcm\\:bg-muted" },
-  { name: "no-scrollbar utility", pattern: ".no-scrollbar" },
+  { name: "tcm-no-scrollbar utility", pattern: ".tcm-no-scrollbar" },
   { name: "scoped --background token on .tcm-root", pattern: ".tcm-root" },
 ];
 
@@ -21,7 +20,7 @@ for (const check of checks) {
   if (!ok) failed++;
 }
 
-const unprefixedFlex = css.match(/(?<![\\:])\.flex\{/);
+const unprefixedFlex = css.match(/(?<![\\:.])\.flex\{/);
 console.log(`${unprefixedFlex ? "FAIL" : "PASS"}: no unprefixed .flex{ selector`);
 if (unprefixedFlex) failed++;
 

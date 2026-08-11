@@ -18,7 +18,7 @@ export function renderMentions(text: string): ReactNode {
         <a
           key={idx}
           href={`#${part.slice(1)}`}
-          className="tcm:font-semibold tcm:hover:tcm:underline tcm:transition-colors"
+          className="tcm-font-semibold tcm-hover:tcm-underline tcm-transition-colors"
           style={{ color: "oklch(0.62 0.15 255)" }}
           onClick={(e) => {
             // Prevent navigation; in a real app, this would trigger a profile modal

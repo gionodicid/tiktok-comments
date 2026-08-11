@@ -104,7 +104,7 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
 
   return (
     <div
-      className="tcm:relative tcm:border-t tcm:border-border"
+      className="tcm-relative tcm-border-t tcm-border-border"
       style={{ background: "var(--background)" }}
     >
       {/* Panels above input */}
@@ -124,18 +124,18 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
       {/* Reply context banner */}
       {replyingTo && (
         <div
-          className="tcm:flex tcm:items-center tcm:justify-between tcm:px-4 tcm:py-2 tcm:text-xs tcm:border-b tcm:border-border"
+          className="tcm-flex tcm-items-center tcm-justify-between tcm-px-4 tcm-py-2 tcm-text-xs tcm-border-b tcm-border-border"
           style={{ color: "var(--muted-foreground)" }}
         >
           <span>
             Replying to{" "}
-            <span className="tcm:font-semibold" style={{ color: "var(--foreground)" }}>
+            <span className="tcm-font-semibold" style={{ color: "var(--foreground)" }}>
               @{replyingTo}
             </span>
           </span>
           <button
             onClick={onCancelReply}
-            className="tcm:font-semibold tcm:hover:tcm:text-foreground tcm:transition-colors"
+            className="tcm-font-semibold tcm-hover:tcm-text-foreground tcm-transition-colors"
             aria-label="Cancel reply"
           >
             Cancel
@@ -145,16 +145,16 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
 
       {/* Attachment preview */}
       {attachment && (
-        <div className="tcm:px-4 tcm:pt-3 tcm:pb-1">
-          <div className="tcm:relative tcm:inline-block">
+        <div className="tcm-px-4 tcm-pt-3 tcm-pb-1">
+          <div className="tcm-relative tcm-inline-block">
             <img
               src={attachment.url}
               alt={attachment.type === "image" ? "Image preview" : "Sticker preview"}
-              className="tcm:rounded-lg tcm:object-cover tcm:w-20 tcm:h-20"
+              className="tcm-rounded-lg tcm-object-cover tcm-w-20 tcm-h-20"
             />
             {/* Edit button */}
             <button
-              className="tcm:absolute tcm:top-1 tcm:left-1 tcm:w-6 tcm:h-6 tcm:rounded-full tcm:bg-black/70 tcm:flex tcm:items-center tcm:justify-center tcm:text-white tcm:hover:tcm:bg-black/90 tcm:transition-colors"
+              className="tcm-absolute tcm-top-1 tcm-left-1 tcm-w-6 tcm-h-6 tcm-rounded-full tcm-bg-black/70 tcm-flex tcm-items-center tcm-justify-center tcm-text-white tcm-hover:tcm-bg-black/90 tcm-transition-colors"
               aria-label="Edit attachment"
             >
               <Pencil size={12} />
@@ -162,7 +162,7 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
             {/* Remove button */}
             <button
               onClick={() => setAttachment(null)}
-              className="tcm:absolute tcm:top-1 tcm:right-1 tcm:w-6 tcm:h-6 tcm:rounded-full tcm:bg-black/70 tcm:flex tcm:items-center tcm:justify-center tcm:text-white tcm:hover:tcm:bg-black/90 tcm:transition-colors"
+              className="tcm-absolute tcm-top-1 tcm-right-1 tcm-w-6 tcm-h-6 tcm-rounded-full tcm-bg-black/70 tcm-flex tcm-items-center tcm-justify-center tcm-text-white tcm-hover:tcm-bg-black/90 tcm-transition-colors"
               aria-label="Remove attachment"
             >
               <X size={12} />
@@ -173,21 +173,21 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
 
       {focused ? (
         /* ── EXPANDED LAYOUT ── */
-        <div className="tcm:flex tcm:flex-col">
+        <div className="tcm-flex tcm-flex-col">
           {/* Row 1 (emoji strip removed) */}
 
           {/* Row 2: avatar + full-width pill */}
-          <div className="tcm:flex tcm:items-start tcm:gap-2.5 tcm:px-3 tcm:pt-3 tcm:pb-2">
-          <div className="tcm:shrink-0 tcm:mt-1">
+          <div className="tcm-flex tcm-items-start tcm-gap-2.5 tcm-px-3 tcm-pt-3 tcm-pb-2">
+          <div className="tcm-shrink-0 tcm-mt-1">
               <img
                 src={avatarUrl}
                 alt="Your avatar"
-                className="tcm:rounded-full tcm:object-cover tcm:w-9 tcm:h-9"
+                className="tcm-rounded-full tcm-object-cover tcm-w-9 tcm-h-9"
               />
             </div>
             {/* Pill grows vertically; textarea scrolls after max-h */}
             <div
-              className="tcm:flex-1 tcm:min-w-0 tcm:flex tcm:flex-col tcm:rounded-2xl tcm:px-4 tcm:pt-3 tcm:pb-2 tcm:ring-1 tcm:ring-ring"
+              className="tcm-flex-1 tcm-min-w-0 tcm-flex tcm-flex-col tcm-rounded-2xl tcm-px-4 tcm-pt-3 tcm-pb-2 tcm-ring-1 tcm-ring-ring"
               style={{ background: "var(--input-surface)" }}
             >
               <textarea
@@ -204,14 +204,14 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
                 }}
                 rows={1}
                 placeholder={replyingTo ? `Reply to @${replyingTo}…` : "Add comment…"}
-                className="tcm:w-full tcm:bg-transparent tcm:text-sm tcm:text-foreground tcm:placeholder:tcm:text-muted-foreground tcm:resize-none tcm:outline-none tcm:leading-relaxed tcm:overflow-y-auto"
+                className="tcm-w-full tcm-bg-transparent tcm-text-sm tcm-text-foreground tcm-placeholder:tcm-text-muted-foreground tcm-resize-none tcm-outline-none tcm-leading-relaxed tcm-overflow-y-auto"
                 style={{ scrollbarWidth: "none", minHeight: 22, maxHeight: 160 }}
                 aria-label="Comment input"
                 autoFocus
               />
               {charCount > 0 && (
                 <span
-                  className="tcm:mt-1.5 tcm:text-[11px] tcm:self-start tcm:tabular-nums"
+                  className="tcm-mt-1.5 tcm-text-[11px] tcm-self-start tcm-tabular-nums"
                   style={{
                     color: charCount >= MAX_CHARS * 0.9
                       ? "var(--love-red)"
@@ -225,8 +225,8 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
           </div>
 
           {/* Row 3: action icons left, send button right */}
-          <div className="tcm:flex tcm:items-center tcm:justify-between tcm:px-3 tcm:pb-3">
-            <div className="tcm:flex tcm:items-center tcm:gap-1">
+          <div className="tcm-flex tcm-items-center tcm-justify-between tcm-px-3 tcm-pb-3">
+            <div className="tcm-flex tcm-items-center tcm-gap-1">
               <ToolbarIconButton
                 icon={<ImageIcon size={22} />}
                 label="Attach image"
@@ -257,30 +257,30 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
               disabled={!canSend}
               aria-label="Send comment"
               className={cn(
-                "tcm:hidden tcm:lg:tcm:flex tcm:w-12 tcm:h-10 tcm:rounded-full tcm:items-center tcm:justify-center tcm:transition-all tcm:duration-150",
+                "tcm-hidden tcm-lg:tcm-flex tcm-w-12 tcm-h-10 tcm-rounded-full tcm-items-center tcm-justify-center tcm-transition-all tcm-duration-150",
                 canSend
-                  ? "tcm:opacity-100 tcm:scale-100"
-                  : "tcm:opacity-40 tcm:scale-95 tcm:cursor-not-allowed"
+                  ? "tcm-opacity-100 tcm-scale-100"
+                  : "tcm-opacity-40 tcm-scale-95 tcm-cursor-not-allowed"
               )}
               style={{ background: canSend ? "var(--love-red)" : "var(--muted)" }}
             >
-              <ArrowUp size={18} className="tcm:text-white" />
+              <ArrowUp size={18} className="tcm-text-white" />
             </button>
           </div>
         </div>
       ) : (
         /* ── COLLAPSED LAYOUT ── */
-        <div className="tcm:flex tcm:items-center tcm:gap-2.5 tcm:px-3 tcm:py-3">
-          <div className="tcm:shrink-0">
+        <div className="tcm-flex tcm-items-center tcm-gap-2.5 tcm-px-3 tcm-py-3">
+          <div className="tcm-shrink-0">
             <img
               src={avatarUrl}
               alt="Your avatar"
-              className="tcm:rounded-full tcm:object-cover tcm:w-9 tcm:h-9"
+              className="tcm-rounded-full tcm-object-cover tcm-w-9 tcm-h-9"
             />
           </div>
 
           <div
-            className="tcm:flex-1 tcm:min-w-0 tcm:flex tcm:items-center tcm:rounded-full tcm:px-4 tcm:py-2 tcm:gap-2"
+            className="tcm-flex-1 tcm-min-w-0 tcm-flex tcm-items-center tcm-rounded-full tcm-px-4 tcm-py-2 tcm-gap-2"
             style={{ background: "var(--input-surface)" }}
           >
             <textarea
@@ -291,11 +291,11 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
               onFocus={() => setFocused(true)}
               rows={1}
               placeholder={replyingTo ? `Reply to @${replyingTo}…` : "Add comment…"}
-              className="tcm:flex-1 tcm:bg-transparent tcm:text-sm tcm:text-foreground tcm:placeholder:tcm:text-muted-foreground tcm:resize-none tcm:outline-none tcm:leading-relaxed tcm:overflow-y-auto"
+              className="tcm-flex-1 tcm-bg-transparent tcm-text-sm tcm-text-foreground tcm-placeholder:tcm-text-muted-foreground tcm-resize-none tcm-outline-none tcm-leading-relaxed tcm-overflow-y-auto"
               style={{ scrollbarWidth: "none", minHeight: 22, maxHeight: 160 }}
               aria-label="Comment input"
             />
-            <div className="tcm:flex tcm:items-center tcm:gap-0.5 tcm:shrink-0">
+            <div className="tcm-flex tcm-items-center tcm-gap-0.5 tcm-shrink-0">
               <PillIconButton icon={<ImageIcon size={19} />} label="Attach image" onClick={handleImageClick} />
               <PillIconButton icon={<Smile size={19} />} label="Stickers" onClick={() => setStickerSelectorOpen(true)} />
               <PillIconButton icon={<AtSign size={19} />} label="Mention" onClick={() => setMentionSelectorOpen(true)} />
@@ -308,14 +308,14 @@ export function CommentInputBar({ replyingTo, onCancelReply, onSubmit, currentUs
             disabled={!canSend}
             aria-label="Send comment"
             className={cn(
-              "tcm:hidden tcm:lg:tcm:flex tcm:shrink-0 tcm:w-9 tcm:h-9 tcm:rounded-full tcm:items-center tcm:justify-center tcm:transition-all tcm:duration-150",
+              "tcm-hidden tcm-lg:tcm-flex tcm-shrink-0 tcm-w-9 tcm-h-9 tcm-rounded-full tcm-items-center tcm-justify-center tcm-transition-all tcm-duration-150",
               canSend
-                ? "tcm:opacity-100 tcm:scale-100"
-                : "tcm:opacity-40 tcm:scale-95 tcm:cursor-not-allowed"
+                ? "tcm-opacity-100 tcm-scale-100"
+                : "tcm-opacity-40 tcm-scale-95 tcm-cursor-not-allowed"
             )}
             style={{ background: canSend ? "var(--love-red)" : "var(--muted)" }}
           >
-            <ArrowUp size={16} className="tcm:text-white" />
+            <ArrowUp size={16} className="tcm-text-white" />
           </button>
         </div>
       )}
@@ -340,7 +340,7 @@ function PillIconButton({
     <button
       onClick={onClick}
       className={cn(
-        "tcm:w-7 tcm:h-7 tcm:flex tcm:items-center tcm:justify-center tcm:rounded-full tcm:transition-colors",
+        "tcm-w-7 tcm-h-7 tcm-flex tcm-items-center tcm-justify-center tcm-rounded-full tcm-transition-colors",
         className
       )}
       style={{ color: "var(--muted-foreground)" }}
@@ -368,8 +368,8 @@ function ToolbarIconButton({
     <button
       onClick={onClick}
       className={cn(
-        "tcm:w-10 tcm:h-10 tcm:flex tcm:items-center tcm:justify-center tcm:rounded-full tcm:transition-colors",
-        active ? "tcm:bg-muted" : "tcm:hover:tcm:bg-muted"
+        "tcm-w-10 tcm-h-10 tcm-flex tcm-items-center tcm-justify-center tcm-rounded-full tcm-transition-colors",
+        active ? "tcm-bg-muted" : "tcm-hover:tcm-bg-muted"
       )}
       style={{ color: active ? "var(--foreground)" : "var(--muted-foreground)" }}
       aria-label={label}

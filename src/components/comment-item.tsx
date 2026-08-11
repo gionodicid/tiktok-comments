@@ -35,28 +35,28 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
     .slice(0, 3);
 
   return (
-    <article className="tcm:px-3 tcm:sm:tcm:px-4 tcm:pt-4 tcm:pb-1 tcm:w-full tcm:min-w-0">
-      <div className="tcm:flex tcm:gap-3">
+    <article className="tcm-px-3 tcm-sm:tcm-px-4 tcm-pt-4 tcm-pb-1 tcm-w-full tcm-min-w-0">
+      <div className="tcm-flex tcm-gap-3">
 
         {/* Avatar */}
         <button
-          className="tcm:shrink-0 tcm:self-start"
+          className="tcm-shrink-0 tcm-self-start"
           onClick={() => setProfileDrawerOpen(true)}
           aria-label={`View ${comment.name}'s profile`}
         >
           <img
             src={comment.avatar}
             alt={`${comment.name}'s avatar`}
-            className="tcm:rounded-full tcm:object-cover tcm:w-8 tcm:h-8 tcm:md:tcm:w-10 tcm:md:tcm:h-10"
+            className="tcm-rounded-full tcm-object-cover tcm-w-8 tcm-h-8 tcm-md:tcm-w-10 tcm-md:tcm-h-10"
           />
         </button>
 
         {/* Right column */}
-        <div className="tcm:flex-1 tcm:min-w-0">
-          <div className="tcm:pb-3">
+        <div className="tcm-flex-1 tcm-min-w-0">
+          <div className="tcm-pb-3">
 
             {/* Name row: pin icon (if pinned) + username + badge icons + subscription pill */}
-            <div className="tcm:flex tcm:items-center tcm:gap-1.5 tcm:flex-wrap tcm:mb-1">
+            <div className="tcm-flex tcm-items-center tcm-gap-1.5 tcm-flex-wrap tcm-mb-1">
               {comment.pinned && (
                 <Pin
                   size={12}
@@ -64,17 +64,17 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
                   aria-label="Pinned comment"
                 />
               )}
-              <span className="tcm:text-[13px] tcm:font-semibold tcm:leading-tight tcm:text-foreground">
+              <span className="tcm-text-[13px] tcm-font-semibold tcm-leading-tight tcm-text-foreground">
                 {comment.name}
               </span>
 
               {earnedBadges.length > 0 && (
-                <div className="tcm:flex tcm:items-center tcm:gap-1">
+                <div className="tcm-flex tcm-items-center tcm-gap-1">
                   {earnedBadges.map((badge) => (
                     <button
                       key={badge.id}
                       onClick={() => setSelectedBadge(badge)}
-                      className="tcm:w-[22px] tcm:h-[22px] tcm:rounded-full tcm:flex tcm:items-center tcm:justify-center tcm:transition-all tcm:hover:tcm:brightness-125 tcm:hover:tcm:-translate-y-px"
+                      className="tcm-w-[22px] tcm-h-[22px] tcm-rounded-full tcm-flex tcm-items-center tcm-justify-center tcm-transition-all tcm-hover:tcm-brightness-125 tcm-hover:tcm--translate-y-px"
                       style={{
                         background: `${badge.color}1f`,
                         border: `1px solid ${badge.color}40`,
@@ -84,7 +84,7 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
                       <BadgeIcon
                         name={badge.lucideIcon}
                         style={{ color: badge.color }}
-                        className="tcm:w-3 tcm:h-3"
+                        className="tcm-w-3 tcm-h-3"
                         strokeWidth={2}
                       />
                     </button>
@@ -94,7 +94,7 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
 
               {comment.subscription && (
                 <span
-                  className="tcm:text-[10px] tcm:font-bold tcm:px-1.5 tcm:py-0.5 tcm:rounded-sm tcm:uppercase"
+                  className="tcm-text-[10px] tcm-font-bold tcm-px-1.5 tcm-py-0.5 tcm-rounded-sm tcm-uppercase"
                   style={{
                     color: comment.subscription === "max" ? "#a855f7" : "#f59e0b",
                     border: `1px solid ${comment.subscription === "max" ? "#7c3aed" : "#b45309"}`,
@@ -106,20 +106,20 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
               )}
             </div>
 
-            <p className="tcm:text-[15px] tcm:text-foreground tcm:leading-snug tcm:break-words">
+            <p className="tcm-text-[15px] tcm-text-foreground tcm-leading-snug tcm-break-words">
               {renderMentions(comment.text)}
             </p>
 
             {comment.image && (
               <button
                 onClick={() => setLightboxOpen(true)}
-                className="tcm:mt-2 tcm:rounded-lg tcm:overflow-hidden tcm:block tcm:hover:tcm:opacity-90 tcm:transition-opacity"
+                className="tcm-mt-2 tcm-rounded-lg tcm-overflow-hidden tcm-block tcm-hover:tcm-opacity-90 tcm-transition-opacity"
                 aria-label="View full image"
               >
                 <img
                   src={comment.image}
                   alt="Attached image"
-                  className="tcm:object-cover tcm:rounded-lg tcm:w-[120px] tcm:h-[90px]"
+                  className="tcm-object-cover tcm-rounded-lg tcm-w-[120px] tcm-h-[90px]"
                 />
               </button>
             )}
@@ -127,51 +127,51 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
             {comment.sticker && (
               <button
                 onClick={() => setStickerDrawerOpen(true)}
-                className="tcm:mt-2 tcm:block tcm:hover:tcm:scale-105 tcm:transition-transform"
+                className="tcm-mt-2 tcm-block tcm-hover:tcm-scale-105 tcm-transition-transform"
                 aria-label="View sticker"
               >
                 <img
                   src={comment.sticker}
                   alt="Sticker"
-                  className="tcm:object-contain tcm:w-20 tcm:h-20"
+                  className="tcm-object-contain tcm-w-20 tcm-h-20"
                 />
               </button>
             )}
 
-            <div className="tcm:flex tcm:items-center tcm:gap-3 tcm:mt-2">
-              <span className="tcm:text-[13px] tcm:text-muted-foreground tcm:tabular-nums">
+            <div className="tcm-flex tcm-items-center tcm-gap-3 tcm-mt-2">
+              <span className="tcm-text-[13px] tcm-text-muted-foreground tcm-tabular-nums">
                 {comment.timestamp}
               </span>
               <button
-                className="tcm:text-[13px] tcm:font-semibold tcm:text-muted-foreground tcm:hover:tcm:text-foreground tcm:transition-colors"
+                className="tcm-text-[13px] tcm-font-semibold tcm-text-muted-foreground tcm-hover:tcm-text-foreground tcm-transition-colors"
                 onClick={() => onReply(comment.name)}
                 aria-label={`Reply to ${comment.name}`}
               >
                 Reply
               </button>
-              <div className="tcm:ml-auto tcm:flex tcm:items-center tcm:gap-3">
+              <div className="tcm-ml-auto tcm-flex tcm-items-center tcm-gap-3">
                 <button
                   onClick={() => onLike(comment.id)}
                   aria-label={comment.liked ? "Unlike comment" : "Like comment"}
-                  className="tcm:flex tcm:items-center tcm:gap-1.5 tcm:transition-transform tcm:active:tcm:scale-125"
+                  className="tcm-flex tcm-items-center tcm-gap-1.5 tcm-transition-transform tcm-active:tcm-scale-125"
                 >
                   <Heart
                     className={cn(
-                      "tcm:w-[1em] tcm:h-[1em] tcm:transition-colors",
+                      "tcm-w-[1em] tcm-h-[1em] tcm-transition-colors",
                       comment.liked
-                        ? "tcm:fill-current tcm:stroke-none"
-                        : "tcm:fill-none tcm:stroke-muted-foreground tcm:hover:tcm:stroke-foreground"
+                        ? "tcm-fill-current tcm-stroke-none"
+                        : "tcm-fill-none tcm-stroke-muted-foreground tcm-hover:tcm-stroke-foreground"
                     )}
                     style={comment.liked ? { color: "var(--love-red)" } : undefined}
                     strokeWidth={1.75}
                   />
-                  <span className="tcm:text-[12px] tcm:text-muted-foreground tcm:tabular-nums tcm:min-w-[24px]">
+                  <span className="tcm-text-[12px] tcm-text-muted-foreground tcm-tabular-nums tcm-min-w-[24px]">
                     {formatLikes(comment.likes)}
                   </span>
                 </button>
                 <button aria-label="Dislike comment">
                   <ThumbsDown
-                    className="tcm:w-[1em] tcm:h-[1em] tcm:fill-none tcm:stroke-muted-foreground tcm:hover:tcm:stroke-foreground tcm:transition-colors"
+                    className="tcm-w-[1em] tcm-h-[1em] tcm-fill-none tcm-stroke-muted-foreground tcm-hover:tcm-stroke-foreground tcm-transition-colors"
                     strokeWidth={1.75}
                   />
                 </button>

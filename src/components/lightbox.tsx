@@ -19,7 +19,7 @@ export function Lightbox({ src, alt = "Image", onClose }: LightboxProps) {
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "tcm:hidden";
+    document.body.style.overflow = "tcm-hidden";
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
@@ -28,7 +28,7 @@ export function Lightbox({ src, alt = "Image", onClose }: LightboxProps) {
 
   return (
     <div
-      className="tcm:fixed tcm:inset-0 tcm:z-50 tcm:flex tcm:items-center tcm:justify-center tcm:bg-black/80 tcm:animate-in tcm:fade-in tcm:duration-200"
+      className="tcm-fixed tcm-inset-0 tcm-z-50 tcm-flex tcm-items-center tcm-justify-center tcm-bg-black/80 tcm-animate-in tcm-fade-in tcm-duration-200"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -37,7 +37,7 @@ export function Lightbox({ src, alt = "Image", onClose }: LightboxProps) {
       {/* Close button */}
       <button
         onClick={onClose}
-        className="tcm:absolute tcm:top-4 tcm:right-4 tcm:z-10 tcm:w-10 tcm:h-10 tcm:rounded-full tcm:bg-black/60 tcm:hover:tcm:bg-black/80 tcm:flex tcm:items-center tcm:justify-center tcm:text-white tcm:transition-colors"
+        className="tcm-absolute tcm-top-4 tcm-right-4 tcm-z-10 tcm-w-10 tcm-h-10 tcm-rounded-full tcm-bg-black/60 tcm-hover:tcm-bg-black/80 tcm-flex tcm-items-center tcm-justify-center tcm-text-white tcm-transition-colors"
         aria-label="Close lightbox"
       >
         <X size={20} />
@@ -45,13 +45,13 @@ export function Lightbox({ src, alt = "Image", onClose }: LightboxProps) {
 
       {/* Image */}
       <div
-        className="tcm:relative tcm:max-w-[90vw] tcm:max-h-[80vh]"
+        className="tcm-relative tcm-max-w-[90vw] tcm-max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <img
           src={src}
           alt={alt}
-          className="tcm:object-contain tcm:max-w-[90vw] tcm:max-h-[80vh] tcm:rounded-lg"
+          className="tcm-object-contain tcm-max-w-[90vw] tcm-max-h-[80vh] tcm-rounded-lg"
         />
       </div>
     </div>

@@ -59,11 +59,11 @@ export default function App() {
 
   return (
     <main
-      className="tcm:min-h-svh tcm:flex tcm:items-stretch tcm:lg:tcm:items-center tcm:justify-center tcm:lg:tcm:p-4"
+      className="tcm-min-h-svh tcm-flex tcm-items-stretch tcm-lg:tcm-items-center tcm-justify-center tcm-lg:tcm-p-4"
       style={{ background: "oklch(0.10 0.004 285.82)" }}
     >
       <div
-        className="tcm:relative tcm:w-full tcm:flex tcm:flex-col tcm:h-svh tcm:lg:tcm:h-[min(92svh,800px)] tcm:lg:tcm:max-w-2xl tcm:lg:tcm:rounded-2xl tcm:overflow-hidden"
+        className="tcm-relative tcm-w-full tcm-flex tcm-flex-col tcm-h-svh tcm-lg:tcm-h-[min(92svh,800px)] tcm-lg:tcm-max-w-2xl tcm-lg:tcm-rounded-2xl tcm-overflow-hidden"
         style={{ background: "var(--background)" }}
       >
         <CommentSection
