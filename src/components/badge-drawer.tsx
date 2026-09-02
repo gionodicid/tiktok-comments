@@ -2,12 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { EarnedBadge } from "./comment-data";
 import { BadgeIcon } from "./badge-icon";
 
 interface BadgeDrawerProps {
   badge: EarnedBadge;
   onClose: () => void;
+  className?: string;
 }
 
 const RARITY_COLORS: Record<EarnedBadge["rarity"], string> = {
@@ -17,7 +19,7 @@ const RARITY_COLORS: Record<EarnedBadge["rarity"], string> = {
   legendary: "#f59e0b",
 };
 
-export function BadgeDrawer({ badge, onClose }: BadgeDrawerProps) {
+export function BadgeDrawer({ badge, onClose, className }: BadgeDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,13 +41,16 @@ export function BadgeDrawer({ badge, onClose }: BadgeDrawerProps) {
 
   return (
     <div
-      className="tcm-fixed tcm-inset-0 tcm-z-50 tcm-flex tcm-items-end tcm-justify-center tcm-bg-black/60 tcm-backdrop-blur-sm tcm-animate-in tcm-fade-in tcm-duration-200"
+      className={cn(
+        "tcm-fixed tcm-inset-0 tcm-z-50 tcm-flex tcm-items-end tcm-justify-center tcm-bg-black/60 tcm-backdrop-blur-sm tcm-animate-in tcm-fade-in tcm-duration-200",
+        className,
+      )}
       aria-modal="true"
       role="dialog"
     >
       <div
         ref={drawerRef}
-        className="tcm-w-full tcm-max-w-md tcm-rounded-t-2xl tcm-p-6 tcm-pb-10 tcm-animate-in tcm-slide-in-from-bottom tcm-duration-300"
+        className="tcm-relative tcm-w-full tcm-max-w-md tcm-rounded-t-2xl tcm-p-6 tcm-pb-10 tcm-animate-in tcm-slide-in-from-bottom tcm-duration-300"
         style={{ background: "var(--card)" }}
       >
         {/* Close button */}

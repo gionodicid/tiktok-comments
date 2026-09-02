@@ -1,77 +1,31 @@
-import { useCallback, useState } from "react";
-import { CommentSection } from "@/components/comment-section";
-import type { Attachment, Comment } from "@/index";
-import { initialComments } from "./mock-data";
+import { useState } from "react";
+import { CommentSection, type CommentApiPayload } from "@/components/comment-section";
 
-const DEMO_USER = {
-  name: "Guest User",
-  avatar: "/placeholder.svg?height=36&width=36",
-};
+function mapCommentsResponse(raw: unknown): CommentApiPayload {
+  return raw as CommentApiPayload;
+}
 
 export default function App() {
-  const [comments, setComments] = useState<Comment[]>(initialComments);
-
-  const handleLike = useCallback((id: string) => {
-    setComments((prev) =>
-      prev.map((c) =>
-        c.id === id
-          ? { ...c, liked: !c.liked, likes: c.liked ? c.likes - 1 : c.likes + 1 }
-          : c,
-      ),
-    );
-  }, []);
-
-  const handleLikeReply = useCallback((commentId: string, replyId: string) => {
-    setComments((prev) =>
-      prev.map((c) =>
-        c.id === commentId
-          ? {
-              ...c,
-              replies: c.replies.map((r) =>
-                r.id === replyId
-                  ? { ...r, liked: !r.liked, likes: r.liked ? r.likes - 1 : r.likes + 1 }
-                  : r,
-              ),
-            }
-          : c,
-      ),
-    );
-  }, []);
-
-  const handleSubmit = useCallback(
-    (text: string, attachment?: Attachment, replyTo?: string) => {
-      const newComment: Comment = {
-        id: Date.now().toString(),
-        name: DEMO_USER.name,
-        avatar: DEMO_USER.avatar,
-        text: replyTo ? `@${replyTo} ${text}` : text,
-        likes: 0,
-        liked: false,
-        timestamp: "now",
-        replies: [],
-        image: attachment?.type === "image" ? attachment.url : undefined,
-        sticker: attachment?.type === "sticker" ? attachment.url : undefined,
-      };
-      setComments((prev) => [newComment, ...prev]);
-    },
-    [],
-  );
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   return (
     <main
-      className="tcm-min-h-svh tcm-flex tcm-items-stretch tcm-lg:tcm-items-center tcm-justify-center tcm-lg:tcm-p-4"
-      style={{ background: "oklch(0.10 0.004 285.82)" }}
+      className="tcm-min-h-dvh tcm-flex tcm-items-stretch tcm-lg:tcm-items-center tcm-justify-center tcm-lg:tcm-p-4"
+      style={{
+        background: theme === "dark" ? "oklch(0.10 0.004 285.82)" : "oklch(0.94 0.004 285.82)",
+      }}
     >
       <div
-        className="tcm-relative tcm-w-full tcm-flex tcm-flex-col tcm-h-svh tcm-lg:tcm-h-[min(92svh,800px)] tcm-lg:tcm-max-w-2xl tcm-lg:tcm-rounded-2xl tcm-overflow-hidden"
+        className="tcm-relative tcm-w-full tcm-flex tcm-flex-col tcm-min-h-0 tcm-h-dvh tcm-lg:tcm-h-[min(92dvh,800px)] tcm-lg:tcm-max-w-2xl tcm-lg:tcm-rounded-2xl tcm-overflow-hidden"
         style={{ background: "var(--background)" }}
       >
         <CommentSection
-          comments={comments}
-          currentUser={DEMO_USER}
-          onSubmit={handleSubmit}
-          onLike={handleLike}
-          onLikeReply={handleLikeReply}
+          url="/api/comments"
+          response={mapCommentsResponse}
+          theme={theme}
+          showThemeToggle
+          onThemeChange={setTheme}
+          onReportSticker={(src) => console.info("[demo] report sticker:", src)}
         />
       </div>
     </main>

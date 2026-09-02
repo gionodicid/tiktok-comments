@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Heart, ThumbsDown, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { renderMentions } from "@/lib/mention-parser";
-import { Reply, formatLikes } from "./comment-data";
+import { formatCommentTime } from "@/lib/format-comment-time";
+import { Reply, CommentProfile, formatLikes } from "./comment-data";
 import { Lightbox } from "./lightbox";
 import { StickerDrawer } from "./sticker-drawer";
 import { ProfileDrawer } from "./profile-drawer";
@@ -12,14 +13,45 @@ import { ProfileDrawer } from "./profile-drawer";
 interface ReplyItemProps {
   reply: Reply;
   hasLineBelow: boolean;
+  mentionNames: string[];
   onLike: (id: string) => void;
-  onReply: (name: string) => void;
+  onDislike: (id: string) => void;
+  onReply: (name: string, replyId: string | undefined, text: string) => void;
+  onMentionClick: (name: string) => Promise<CommentProfile | undefined>;
+  onViewProfile?: (profile: CommentProfile) => void;
+  onReportSticker?: (src: string) => void;
 }
 
-function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
+function ReplyItem({
+  reply,
+  hasLineBelow,
+  mentionNames,
+  onLike,
+  onDislike,
+  onReply,
+  onMentionClick,
+  onViewProfile,
+  onReportSticker,
+}: ReplyItemProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [stickerDrawerOpen, setStickerDrawerOpen] = useState(false);
-  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const [profileTarget, setProfileTarget] = useState<CommentProfile | null>(null);
+
+  const openAuthorProfile = async () => {
+    const user = await onMentionClick(reply.name);
+    setProfileTarget(
+      user ?? {
+        name: reply.name,
+        avatar: reply.avatar,
+        subscription: reply.subscription,
+      },
+    );
+  };
+
+  const openMentionProfile = async (name: string) => {
+    const user = await onMentionClick(name);
+    if (user) setProfileTarget(user);
+  };
 
   return (
     <div className="tcm-flex tcm-gap-3 tcm-pt-3 tcm-w-full tcm-min-w-0">
@@ -35,7 +67,7 @@ function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
         {/* Avatar (no corner badge) */}
         <button
           className="tcm-shrink-0"
-          onClick={() => setProfileDrawerOpen(true)}
+          onClick={openAuthorProfile}
           aria-label={`View ${reply.name}'s profile`}
         >
           <img
@@ -105,7 +137,12 @@ function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
         </div>
 
         {/* Reply body */}
-        <p className="tcm-text-[15px] tcm-text-foreground tcm-leading-snug tcm-break-words">{renderMentions(reply.text)}</p>
+        <p className="tcm-text-[15px] tcm-text-foreground tcm-leading-snug tcm-break-words">
+          {renderMentions(reply.text, {
+            names: mentionNames,
+            onMentionClick: openMentionProfile,
+          })}
+        </p>
 
         {/* Image attachment */}
         {reply.image && (
@@ -140,11 +177,11 @@ function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
         {/* Metadata row: timestamp > Reply > [spacer] > heart > dislike */}
         <div className="tcm-flex tcm-items-center tcm-gap-3 tcm-mt-2">
           <span className="tcm-text-[13px] tcm-text-muted-foreground tcm-tabular-nums">
-            {reply.timestamp}
+            {formatCommentTime(reply.timestamp)}
           </span>
           <button
             className="tcm-text-[13px] tcm-font-semibold tcm-text-muted-foreground tcm-hover:tcm-text-foreground tcm-transition-colors"
-            onClick={() => onReply(reply.name)}
+            onClick={() => onReply(reply.name, reply.id, reply.text)}
             aria-label={`Reply to ${reply.name}`}
           >
             Reply
@@ -169,9 +206,17 @@ function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
                 {formatLikes(reply.likes)}
               </span>
             </button>
-            <button aria-label="Dislike reply">
+            <button
+              onClick={() => onDislike(reply.id)}
+              aria-label={reply.disliked ? "Remove dislike" : "Dislike reply"}
+            >
               <ThumbsDown
-                className="tcm-w-[1em] tcm-h-[1em] tcm-fill-none tcm-stroke-muted-foreground tcm-hover:tcm-stroke-foreground tcm-transition-colors"
+                className={cn(
+                  "tcm-w-[1em] tcm-h-[1em] tcm-transition-colors",
+                  reply.disliked
+                    ? "tcm-fill-current tcm-stroke-none tcm-text-foreground"
+                    : "tcm-fill-none tcm-stroke-muted-foreground tcm-hover:tcm-stroke-foreground",
+                )}
                 strokeWidth={1.75}
               />
             </button>
@@ -193,16 +238,16 @@ function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
         <StickerDrawer
           src={reply.sticker}
           onClose={() => setStickerDrawerOpen(false)}
+          onReport={onReportSticker}
         />
       )}
 
       {/* Profile drawer */}
-      {profileDrawerOpen && (
+      {profileTarget && (
         <ProfileDrawer
-          name={reply.name}
-          avatar={reply.avatar}
-          subscription={reply.subscription}
-          onClose={() => setProfileDrawerOpen(false)}
+          profile={profileTarget}
+          onClose={() => setProfileTarget(null)}
+          onViewProfile={onViewProfile}
         />
       )}
     </div>
@@ -211,16 +256,33 @@ function ReplyItem({ reply, hasLineBelow, onLike, onReply }: ReplyItemProps) {
 
 interface ReplyListProps {
   replies: Reply[];
+  expandReplies?: boolean;
+  mentionNames: string[];
   onLikeReply: (replyId: string) => void;
-  onReply: (username: string) => void;
+  onDislikeReply: (replyId: string) => void;
+  onReply: (username: string, replyId: string | undefined, text: string) => void;
+  onMentionClick: (name: string) => Promise<CommentProfile | undefined>;
+  onViewProfile?: (profile: CommentProfile) => void;
+  onReportSticker?: (src: string) => void;
 }
 
-export function ReplyList({ replies, onLikeReply, onReply }: ReplyListProps) {
+export function ReplyList({
+  replies,
+  expandReplies,
+  mentionNames,
+  onLikeReply,
+  onDislikeReply,
+  onReply,
+  onMentionClick,
+  onViewProfile,
+  onReportSticker,
+}: ReplyListProps) {
   const [expanded, setExpanded] = useState(false);
   if (replies.length === 0) return null;
 
-  // Always show first reply; rest revealed on expand
-  const visible = expanded ? replies : replies.slice(0, 1);
+  // Always show first reply; rest revealed on expand. Search can force-expand.
+  const showAll = expandReplies || expanded;
+  const visible = showAll ? replies : replies.slice(0, 1);
   const hiddenCount = replies.length - 1;
 
   return (
@@ -234,8 +296,13 @@ export function ReplyList({ replies, onLikeReply, onReply }: ReplyListProps) {
             i.e. not the last visible item.
           */
           hasLineBelow={i < visible.length - 1}
+          mentionNames={mentionNames}
           onLike={onLikeReply}
+          onDislike={onDislikeReply}
           onReply={onReply}
+          onMentionClick={onMentionClick}
+          onViewProfile={onViewProfile}
+          onReportSticker={onReportSticker}
         />
       ))}
 
@@ -246,7 +313,7 @@ export function ReplyList({ replies, onLikeReply, onReply }: ReplyListProps) {
         The short dash is always on the far left.
         "Hide" is always on the far right.
       */}
-      {hiddenCount > 0 && (
+      {hiddenCount > 0 && !expandReplies && (
         <div className="tcm-flex tcm-items-center tcm-gap-2 tcm-pt-0.5 tcm-pb-2">
           {/* Short leading dash ── */}
           <div

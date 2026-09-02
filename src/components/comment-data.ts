@@ -5,6 +5,19 @@ export interface CommentUser {
   avatar: string;
 }
 
+export interface CommentProfile extends CommentUser {
+  subscription?: SubscriptionTier;
+  badges?: string[];
+  /** Net score (e.g. likes minus downvotes on the user's comments). */
+  aura?: number;
+  commentCount?: number;
+  mangaReadCount?: number;
+  /** Leaderboard position (1 = top). */
+  rank?: number;
+  /** When set, View profile opens this URL (new tab). */
+  profileUrl?: string;
+}
+
 export interface EarnedBadge {
   id: string;
   lucideIcon: string;
@@ -25,6 +38,21 @@ export const BADGE_CATALOG: EarnedBadge[] = [
   { id: "manhwa",  lucideIcon: "BookOpen",       color: "#93c5fd", name: "Manhwa",        description: "Top commenter on webtoon content",    rarity: "common"    },
 ];
 
+export interface StickerPack {
+  id: string;
+  icon: string;
+  name: string;
+}
+
+export interface StickerItem {
+  id: string;
+  url: string;
+  packId: string;
+  kind: "sticker" | "emoji";
+  label?: string;
+  favorited?: boolean;
+}
+
 export interface Reply {
   id: string;
   name: string;
@@ -32,6 +60,8 @@ export interface Reply {
   text: string;
   likes: number;
   liked: boolean;
+  disliked?: boolean;
+  /** ISO 8601 UTC instant. The library formats this for display. */
   timestamp: string;
   replyingTo?: string;
   image?: string;
@@ -46,6 +76,8 @@ export interface Comment {
   text: string;
   likes: number;
   liked: boolean;
+  disliked?: boolean;
+  /** ISO 8601 UTC instant. The library formats this for display. */
   timestamp: string;
   pinned?: boolean;
   replies: Reply[];

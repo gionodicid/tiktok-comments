@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Heart, ThumbsDown, Pin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { renderMentions } from "@/lib/mention-parser";
-import { Comment, formatLikes, BADGE_CATALOG, EarnedBadge } from "./comment-data";
+import { formatCommentTime } from "@/lib/format-comment-time";
+import { Comment, CommentProfile, formatLikes, BADGE_CATALOG, EarnedBadge } from "./comment-data";
 import { ReplyList } from "./reply-item";
 import { Lightbox } from "./lightbox";
 import { StickerDrawer } from "./sticker-drawer";
@@ -16,17 +17,53 @@ const RARITY_ORDER: EarnedBadge["rarity"][] = ["legendary", "epic", "rare", "com
 
 interface CommentItemProps {
   comment: Comment;
+  expandReplies?: boolean;
+  mentionNames: string[];
   onLike: (id: string) => void;
+  onDislike: (id: string) => void;
   onLikeReply: (commentId: string, replyId: string) => void;
-  onReply: (name: string) => void;
+  onDislikeReply: (commentId: string, replyId: string) => void;
+  onReply: (name: string, replyId: string | undefined, text: string) => void;
+  onMentionClick: (name: string) => Promise<CommentProfile | undefined>;
+  onViewProfile?: (profile: CommentProfile) => void;
+  onReportSticker?: (src: string) => void;
 }
 
-export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentItemProps) {
+export function CommentItem({
+  comment,
+  expandReplies,
+  mentionNames,
+  onLike,
+  onDislike,
+  onLikeReply,
+  onDislikeReply,
+  onReply,
+  onMentionClick,
+  onViewProfile,
+  onReportSticker,
+}: CommentItemProps) {
   const hasReplies = comment.replies.length > 0;
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [stickerDrawerOpen, setStickerDrawerOpen] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<EarnedBadge | null>(null);
-  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const [profileTarget, setProfileTarget] = useState<CommentProfile | null>(null);
+
+  const openAuthorProfile = async () => {
+    const user = await onMentionClick(comment.name);
+    setProfileTarget(
+      user ?? {
+        name: comment.name,
+        avatar: comment.avatar,
+        subscription: comment.subscription,
+        badges: comment.badges,
+      },
+    );
+  };
+
+  const openMentionProfile = async (name: string) => {
+    const user = await onMentionClick(name);
+    if (user) setProfileTarget(user);
+  };
 
   const earnedBadges = (comment.badges || [])
     .map((id) => BADGE_CATALOG.find((b) => b.id === id))
@@ -41,7 +78,7 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
         {/* Avatar */}
         <button
           className="tcm-shrink-0 tcm-self-start"
-          onClick={() => setProfileDrawerOpen(true)}
+          onClick={openAuthorProfile}
           aria-label={`View ${comment.name}'s profile`}
         >
           <img
@@ -107,7 +144,10 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
             </div>
 
             <p className="tcm-text-[15px] tcm-text-foreground tcm-leading-snug tcm-break-words">
-              {renderMentions(comment.text)}
+              {renderMentions(comment.text, {
+                names: mentionNames,
+                onMentionClick: openMentionProfile,
+              })}
             </p>
 
             {comment.image && (
@@ -140,11 +180,11 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
 
             <div className="tcm-flex tcm-items-center tcm-gap-3 tcm-mt-2">
               <span className="tcm-text-[13px] tcm-text-muted-foreground tcm-tabular-nums">
-                {comment.timestamp}
+                {formatCommentTime(comment.timestamp)}
               </span>
               <button
                 className="tcm-text-[13px] tcm-font-semibold tcm-text-muted-foreground tcm-hover:tcm-text-foreground tcm-transition-colors"
-                onClick={() => onReply(comment.name)}
+                onClick={() => onReply(comment.name, undefined, comment.text)}
                 aria-label={`Reply to ${comment.name}`}
               >
                 Reply
@@ -169,9 +209,17 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
                     {formatLikes(comment.likes)}
                   </span>
                 </button>
-                <button aria-label="Dislike comment">
+                <button
+                  onClick={() => onDislike(comment.id)}
+                  aria-label={comment.disliked ? "Remove dislike" : "Dislike comment"}
+                >
                   <ThumbsDown
-                    className="tcm-w-[1em] tcm-h-[1em] tcm-fill-none tcm-stroke-muted-foreground tcm-hover:tcm-stroke-foreground tcm-transition-colors"
+                    className={cn(
+                      "tcm-w-[1em] tcm-h-[1em] tcm-transition-colors",
+                      comment.disliked
+                        ? "tcm-fill-current tcm-stroke-none tcm-text-foreground"
+                        : "tcm-fill-none tcm-stroke-muted-foreground tcm-hover:tcm-stroke-foreground",
+                    )}
                     strokeWidth={1.75}
                   />
                 </button>
@@ -182,8 +230,14 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
           {hasReplies && (
             <ReplyList
               replies={comment.replies}
+              expandReplies={expandReplies}
+              mentionNames={mentionNames}
               onLikeReply={(replyId) => onLikeReply(comment.id, replyId)}
+              onDislikeReply={(replyId) => onDislikeReply(comment.id, replyId)}
               onReply={onReply}
+              onMentionClick={onMentionClick}
+              onViewProfile={onViewProfile}
+              onReportSticker={onReportSticker}
             />
           )}
         </div>
@@ -193,18 +247,20 @@ export function CommentItem({ comment, onLike, onLikeReply, onReply }: CommentIt
         <Lightbox src={comment.image} alt="Comment image" onClose={() => setLightboxOpen(false)} />
       )}
       {stickerDrawerOpen && comment.sticker && (
-        <StickerDrawer src={comment.sticker} onClose={() => setStickerDrawerOpen(false)} />
+        <StickerDrawer
+          src={comment.sticker}
+          onClose={() => setStickerDrawerOpen(false)}
+          onReport={onReportSticker}
+        />
       )}
       {selectedBadge && (
         <BadgeDrawer badge={selectedBadge} onClose={() => setSelectedBadge(null)} />
       )}
-      {profileDrawerOpen && (
+      {profileTarget && (
         <ProfileDrawer
-          name={comment.name}
-          avatar={comment.avatar}
-          subscription={comment.subscription}
-          badges={comment.badges}
-          onClose={() => setProfileDrawerOpen(false)}
+          profile={profileTarget}
+          onClose={() => setProfileTarget(null)}
+          onViewProfile={onViewProfile}
         />
       )}
     </article>

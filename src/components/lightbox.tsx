@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback } from "react";
 import { X } from "lucide-react";
+import { useBodyScrollLock } from "@/lib/use-body-scroll-lock";
 
 interface LightboxProps {
   src: string;
@@ -17,12 +18,12 @@ export function Lightbox({ src, alt = "Image", onClose }: LightboxProps) {
     [onClose]
   );
 
+  useBodyScrollLock();
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "tcm-hidden";
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
     };
   }, [handleKeyDown]);
 
@@ -45,13 +46,13 @@ export function Lightbox({ src, alt = "Image", onClose }: LightboxProps) {
 
       {/* Image */}
       <div
-        className="tcm-relative tcm-max-w-[90vw] tcm-max-h-[80vh]"
+        className="tcm-relative tcm-max-w-[90vw] tcm-max-h-[80dvh]"
         onClick={(e) => e.stopPropagation()}
       >
         <img
           src={src}
           alt={alt}
-          className="tcm-object-contain tcm-max-w-[90vw] tcm-max-h-[80vh] tcm-rounded-lg"
+          className="tcm-object-contain tcm-max-w-[90vw] tcm-max-h-[80dvh] tcm-rounded-lg"
         />
       </div>
     </div>

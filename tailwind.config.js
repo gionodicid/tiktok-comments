@@ -2,7 +2,7 @@
 export default {
   prefix: "tcm-",
   darkMode: ["class", ".tcm-root.dark"],
-  content: ["./src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}", "./demo/**/*.{ts,tsx}"],
   theme: {
     extend: {
       screens: {

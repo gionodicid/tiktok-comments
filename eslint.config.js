@@ -32,4 +32,13 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ["demo/api/**/*.ts", "vite.config.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 );

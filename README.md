@@ -11,28 +11,15 @@ npm install tiktok-comments
 ## Usage (React SPA)
 
 ```tsx
-import { useState, useCallback } from "react";
-import { CommentSection } from "tiktok-comments";
-import type { Attachment, Comment } from "tiktok-comments";
+import { CommentSection, type CommentApiPayload } from "tiktok-comments";
 import "tiktok-comments/styles.css";
 
+function mapResponse(raw: unknown): CommentApiPayload {
+  return raw as CommentApiPayload;
+}
+
 export function VideoComments() {
-  const [comments, setComments] = useState<Comment[]>([]);
-
-  const handleSubmit = useCallback((text: string, attachment?: Attachment, replyTo?: string) => {
-    // persist to your API, then update state
-  }, []);
-
-  return (
-    <CommentSection
-      comments={comments}
-      currentUser={{ name: "You", avatar: "/avatar.png" }}
-      onSubmit={handleSubmit}
-      onLike={(id) => { /* ... */ }}
-      onLikeReply={(commentId, replyId) => { /* ... */ }}
-      theme="dark"
-    />
-  );
+  return <CommentSection url="/api/comments" response={mapResponse} theme="dark" />;
 }
 ```
 
@@ -49,29 +36,59 @@ Use the component in a client page or client component:
 ```tsx
 "use client";
 
-import { CommentSection } from "tiktok-comments";
+import { CommentSection, type CommentApiPayload } from "tiktok-comments";
 
 export default function CommentsPage() {
-  return <CommentSection comments={[]} onSubmit={() => {}} onLike={() => {}} onLikeReply={() => {}} />;
+  return <CommentSection url="/api/comments" response={(raw) => raw as CommentApiPayload} />;
 }
 ```
 
 ## API
 
-`CommentSection` is a controlled component. You own comment state and wire it to your backend.
+`CommentSection` fetches from `url`. Map your API JSON with `response`.
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `comments` | `Comment[]` | Comment list to render |
-| `currentUser` | `{ name, avatar }` | Shown in the input bar |
-| `onSubmit` | `(text, attachment?, replyTo?) => void` | New comment submitted |
-| `onLike` | `(commentId) => void` | Top-level comment liked |
-| `onLikeReply` | `(commentId, replyId) => void` | Reply liked |
-| `onReply` | `(commentId, username) => void` | Optional reply intent callback |
+| `url` | `string` | Comments resource, e.g. `/api/comments` |
+| `response` | `(raw: unknown) => CommentApiPayload` | Maps list and mutation JSON |
+| `endpoints` | `Partial<CommentSectionEndpoints>` | Per-route URL overrides; unset keys default from `url` (see below) |
 | `theme` | `"dark" \| "light"` | Default `"dark"` |
 | `className` | `string` | Extra classes on root |
+| `showThemeToggle` | `boolean` | Show theme toggle beside search. Default `false` |
+| `onThemeChange` | `(theme: "dark" \| "light") => void` | Called when user toggles theme (use with `theme` for controlled mode) |
+| `onViewProfile` | `(profile: CommentProfile) => void` | Optional host navigation for View profile (overrides `profile.profileUrl`) |
+| `onReportSticker` | `(src: string) => void` | Optional host handler when user reports a posted sticker |
 
-Exported types: `Comment`, `Reply`, `Attachment`, `CommentUser`, `EarnedBadge`, `SubscriptionTier`.
+**`endpoints` defaults** (all derived from `url` unless overridden):
+
+| Key | Default | Method |
+|-----|---------|--------|
+| `list` | `url` | GET + `q`, `sort`, `offset`, `limit` |
+| `submit` | `url` | POST |
+| `likeComment(id)` | `{url}/{id}/like` | POST |
+| `dislikeComment(id)` | `{url}/{id}/dislike` | POST |
+| `likeReply(commentId, replyId)` | `{url}/{commentId}/replies/{replyId}/like` | POST |
+| `dislikeReply(commentId, replyId)` | `{url}/{commentId}/replies/{replyId}/dislike` | POST |
+| `users` | `{url}/users` | GET |
+| `userByName(name)` | `{url}/users?name=` | GET |
+| `stickers` | `{url}/stickers` | GET + query |
+| `stickerFavorite(id)` | `{url}/stickers/{id}/favorite` | POST |
+
+```tsx
+<CommentSection
+  url="/api/comments"
+  response={mapResponse}
+  endpoints={{
+    users: "/api/authors",
+    userByName: (name) => `/api/authors?name=${encodeURIComponent(name)}`,
+    stickers: "/api/sticker-catalog",
+  }}
+/>
+```
+
+Exported helpers: `defaultCommentSectionEndpoints`, `resolveCommentSectionEndpoints`, types `CommentSectionEndpoints`, `CommentSectionEndpointsConfig`.
+
+Exported types: `Comment`, `Reply`, `Attachment`, `CommentUser`, `CommentProfile`, `EarnedBadge`, `SubscriptionTier`, `ReplyTarget`, `CommentSort`, `CommentApiPayload`.
 
 ## CSS isolation
 
@@ -81,7 +98,7 @@ All Tailwind utilities use the `tcm:` prefix (e.g. `tcm:flex`, `tcm:hover:tcm:bg
 
 ```bash
 npm install
-npm run dev        # demo playground
+npm run dev        # demo playground + in-memory mock API (`/api/comments`)
 npm run check      # typecheck + lint
 npm run build      # library + CSS to dist/
 ```

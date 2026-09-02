@@ -15,7 +15,8 @@ Publishable React UI package **`tiktok-comments`**: TikTok-style comment section
 | Utils | `cn()` in `src/lib/utils.ts` |
 | Icons | `lucide-react` |
 | State | Local React state only — **no** Zustand / Context / React Query |
-| Routing / forms / API | **None** inside the library |
+| Routing / forms | **None** inside the library |
+| Data | `fetch` against `url` + `response` mapper — no React Query / Axios |
 
 Package exports:
 
@@ -26,7 +27,9 @@ Package exports:
 
 ```
 tik-tok-discord-ui-2/
+  AUDIT.md              # UI readiness: dead/broken vs done
   demo/                 # Playground only — not published
+    api/                # In-memory mock API (Vite middleware, Faker seed)
   src/
     index.ts            # Public barrel (ONLY package API)
     styles.css          # Tailwind entry + design tokens
@@ -60,27 +63,40 @@ Do **not** add `src/hooks/`, `src/pages/`, `src/stores/`, `src/queries/`, or a s
 
 ## Public API pattern
 
-Controlled root — host passes data + callbacks; library holds ephemeral UI state only:
+Host passes the comments resource URL and a response mapper. The library fetches, searches, sorts, paginates, likes, dislikes, mention profiles, and submits.
 
 ```ts
 export interface CommentSectionProps {
-  comments: Comment[];
-  currentUser?: CommentUser;
-  onSubmit: (text: string, attachment?: Attachment, replyTo?: string) => void;
-  onLike: (commentId: string) => void;
-  onLikeReply: (commentId: string, replyId: string) => void;
-  onReply?: (commentId: string, username: string) => void;
+  url: string;
+  response: (raw: unknown) => CommentApiPayload;
+  endpoints?: CommentSectionEndpointsConfig;
   className?: string;
   theme?: "dark" | "light";
+  showThemeToggle?: boolean;
+  onThemeChange?: (theme: "dark" | "light") => void;
+  onViewProfile?: (profile: CommentProfile) => void;
+  /** Host moderation when a posted sticker is reported. */
+  onReportSticker?: (src: string) => void;
 }
 ```
+
+Expected resource (defaults from `url`; override via `endpoints` prop):
+
+- `list` — `GET` with `q`, `sort`, `offset`, `limit`
+- `submit` — `POST` body `{ text, attachment?, replyTo? }`
+- `likeComment` / `dislikeComment` — `POST`
+- `likeReply` / `dislikeReply` — `POST`
+- `users` — mention directory (`users` on the payload)
+- `userByName` — profile lookup (`user` on the payload)
+- `stickers` — sticker catalog (`stickers`, `packs`; query `pack`, `q`, `favorites`, `kind`)
+- `stickerFavorite` — toggle favorite (`sticker` on the payload)
 
 Composition (internal):
 
 ```
 CommentSection
 ├── CommentItem → ReplyList / drawers / lightbox
-└── CommentInputBar → sticker / mention selectors
+└── CommentInputBar → sticker / image / mention selectors
 ```
 
 Keep subcomponents out of `src/index.ts` unless they become a deliberate secondary export.
@@ -113,4 +129,4 @@ Keep subcomponents out of `src/index.ts` unless they become a deliberate seconda
 
 ## Consumer reminder (Shinigami)
 
-Host maps auth user → `CommentUser`, owns comment list state, and imports styles. Library must remain usable without Shinigami-specific imports.
+Host serves a comments API matching the `{url}` contract, maps JSON via `response`, and imports styles. Library must remain usable without Shinigami-specific imports.
